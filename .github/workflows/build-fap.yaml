@@ -16,8 +16,6 @@ env:
   FILENAME: build-fap.yaml
   SDK_ZIP_FILENAME: ''
   ARTIFACT_NAME: ''
-  ARTIFACT_ID: ''
-  ARTIFACT_URL: ''
   GH_TOKEN: ${{ github.token }}
 
 jobs:
@@ -75,18 +73,16 @@ jobs:
           sdk-hw-target: ${{ matrix.sdk-hw-target }}
 
       - name: Upload app artifacts
-        id: upload-artifacts
         uses: actions/upload-artifact@v4
+        id: artifact-upload-step
         with:
           name: ${{ env.ARTIFACT_NAME }}-${{ github.run_number }}.zip
           path: ${{ steps.build-app.outputs.fap-artifacts }}
           overwrite: true
           if-no-files-found: error
+          retention-days: 1
 
       - name: Extract ID and URL
-        env:
-          ARTIFACT_ID: ${{ steps.upload-artifacts.outputs.artifact_id }}
-          ARTIFACT_URL: ${{ steps.upload-artifacts.outputs.artifact_url }}
         run: |
-          echo "echo ::notice file=${{ env.FILENAME }},title=Artifact ID::${{ env.ARTIFACT_ID }}" >> $GITHUB_ENV
-          echo "echo ::notice file=${{ env.FILENAME }},title=Artifact URL::${{ env.ARTIFACT_URL }}" >> $GITHUB_ENV
+          echo "echo ::notice file=${{ env.FILENAME }},title=Artifact ID::${{ steps.artifact-upload-step.outputs.artifact-id }}" >> $GITHUB_ENV
+          echo "echo ::notice file=${{ env.FILENAME }},title=Artifact URL::${{ steps.artifact-upload-step.outputs.artifact_url }}" >> $GITHUB_ENV
