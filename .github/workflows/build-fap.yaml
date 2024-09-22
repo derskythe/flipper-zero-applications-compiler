@@ -78,7 +78,7 @@ jobs:
         id: upload-artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.ARTIFACT_NAME }}
+          name: ${{ env.ARTIFACT_NAME }}-${{ github.run_id }}.zip
           path: ${{ steps.build-app.outputs.fap-artifacts }}
           overwrite: true
           if-no-files-found: error
