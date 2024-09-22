@@ -31,7 +31,6 @@ jobs:
             sdk-channel: dev
           - name: Unleashed firmware
             sdk-index-url: "DarkFlippers/unleashed-firmware"
-            sdk-channel: dev
     name: 'UFBT: Build for ${{ matrix.name }}'
     steps:
       - name: Print info
