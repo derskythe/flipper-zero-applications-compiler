@@ -31,6 +31,7 @@ jobs:
             sdk-channel: dev
           - name: Unleashed firmware
             sdk-index-url: "DarkFlippers/unleashed-firmware"
+            sdk-hw-target: "f7"
     name: 'UFBT: Build for ${{ matrix.name }}'
     steps:
       - name: Print info
@@ -63,6 +64,7 @@ jobs:
         uses: flipperdevices/flipperzero-ufbt-action@v0.1
         id: build-app
         with:
+          ufbt-args: "--verbose"
           sdk-channel: ${{ matrix.sdk-channel }}
           sdk-file: ${{ env.SDK_FILE }}
 
