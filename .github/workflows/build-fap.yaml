@@ -56,10 +56,10 @@ jobs:
           echo "Using SDK index URL: ${{ matrix.sdk-index-url }}"
           gh release download --repo "DarkFlippers/unleashed-firmware" \
             --pattern "flipper-z-f7-sdk-unlshd-*.zip" --clobber
-          unzip flipper-z-f7-sdk-unlshd-*.zip
-          mv flipper-z-f7-sdk-unlshd-* sdk
+          # unzip flipper-z-f7-sdk-unlshd-*.zip
+          mv flipper-z-f7-sdk-unlshd-* sdk.zip
           CURRENT_DIR=$(pwd)
-          SDK_ROOT_DIR="${CURRENT_DIR}"/sdk
+          SDK_ROOT_DIR="${CURRENT_DIR}"/sdk.zip
           echo "SDK_ROOT_DIR=${SDK_ROOT_DIR}" >> $GITHUB_ENV
 
       - name: Build with ufbt
