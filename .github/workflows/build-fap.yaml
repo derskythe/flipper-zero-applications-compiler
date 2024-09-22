@@ -64,7 +64,6 @@ jobs:
         uses: flipperdevices/flipperzero-ufbt-action@v0.1
         id: build-app
         with:
-          ufbt-args: "--verbose"
           sdk-channel: ${{ matrix.sdk-channel }}
           sdk-file: ${{ env.SDK_FILE }}
           sdk-hw-target: ${{ matrix.sdk-hw-target }}
