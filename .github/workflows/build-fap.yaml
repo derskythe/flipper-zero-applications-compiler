@@ -14,7 +14,7 @@ permissions:
 
 env:
   FILENAME: build-fap.yaml
-  SDK_FILE: ''
+  SDK_PATH: ''
   ARTIFACT_NAME: ''
   ARTIFACT_ID: ''
   ARTIFACT_URL: ''
@@ -58,14 +58,14 @@ jobs:
             --pattern "flipper-z-f7-sdk-unlshd-*.zip" --clobber
           unzip flipper-z-f7-sdk-unlshd-*.zip
           mv flipper-z-f7-sdk-unlshd-* sdk
-          echo "SDK_FILE=sdk/components.json" >> $GITHUB_ENV
+          echo "SDK_PATH=sdk" >> $GITHUB_ENV
 
       - name: Build with ufbt
         uses: flipperdevices/flipperzero-ufbt-action@v0.1
         id: build-app
         with:
           sdk-channel: ${{ matrix.sdk-channel }}
-          sdk-file: ${{ env.SDK_FILE }}
+          sdk-file: ${{ env.SDK_PATH }}
           sdk-hw-target: ${{ matrix.sdk-hw-target }}
 
       - name: Upload app artifacts
