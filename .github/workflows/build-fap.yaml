@@ -14,7 +14,7 @@ permissions:
 
 env:
   FILENAME: build-fap.yaml
-  SDK_ROOT_DIR: ''
+  SDK_ZIP_FILENAME: ''
   ARTIFACT_NAME: ''
   ARTIFACT_ID: ''
   ARTIFACT_URL: ''
@@ -28,8 +28,10 @@ jobs:
       matrix:
         include:
           - name: Official dev channel
+            suffix: "-ofw"
             sdk-channel: dev
           - name: Unleashed firmware
+            suffix: "-unlshd"
             sdk-index-url: "DarkFlippers/unleashed-firmware"
             sdk-hw-target: "f7"
     name: 'UFBT: Build for ${{ matrix.name }}'
@@ -41,7 +43,7 @@ jobs:
       - name: Replace slash with dash
         run: | 
           CLEAN_NAME=$(echo "${{ inputs.release_version }}" | sed 's/\//-/g' | tr '[:upper:]' '[:lower:]')
-          echo "ARTIFACT_NAME=${CLEAN_NAME}" >> $GITHUB_ENV
+          echo "ARTIFACT_NAME=${CLEAN_NAME}${{ matrix.suffix }}" >> $GITHUB_ENV
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,17 +61,17 @@ jobs:
           # unzip flipper-z-f7-sdk-unlshd-*.zip
           mv flipper-z-f7-sdk-unlshd-* sdk.zip
           CURRENT_DIR=$(pwd)
-          SDK_ROOT_DIR="${CURRENT_DIR}"/sdk.zip
-          echo "SDK_ROOT_DIR=${SDK_ROOT_DIR}" >> $GITHUB_ENV
+          SDK_ZIP_FILENAME="${CURRENT_DIR}"/sdk.zip
+          echo "SDK_ZIP_FILENAME=${SDK_ZIP_FILENAME}" >> $GITHUB_ENV
 
       - name: Build with ufbt
         uses: flipperdevices/flipperzero-ufbt-action@v0.1
         id: build-app
         env:
-          SDK_ROOT_DIR: ${{ env.SDK_ROOT_DIR }}
+          SDK_ZIP_FILENAME: ${{ env.SDK_ZIP_FILENAME }}
         with:
           sdk-channel: ${{ matrix.sdk-channel }}
-          sdk-file: ${{ env.SDK_ROOT_DIR }}
+          sdk-file: ${{ env.SDK_ZIP_FILENAME }}
           sdk-hw-target: ${{ matrix.sdk-hw-target }}
 
       - name: Upload app artifacts
