@@ -1,5 +1,5 @@
 name: "FAP: Build for multiple SDK sources"
-run-name: "Build for multiple SDK sources"
+run-name: "Build for multiple SDK sources ${{ inputs.release_version }}"
 
 on:
   workflow_dispatch:
