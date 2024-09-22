@@ -5,11 +5,20 @@ on:
   workflow_dispatch:
     inputs:
       release_version:
-        description: "Application repository URL"
+        description: "{owner}/{repo}"
         required: true
 
 permissions:
   packages: write
+  contents: read
+
+env:
+  FILENAME: build-fap.yaml
+  SDK_FILE: ''
+  ARTIFACT_NAME: ''
+  ARTIFACT_ID: ''
+  ARTIFACT_URL: ''
+  GH_TOKEN: ${{ github.token }}
 
 jobs:
   ufbt-build-action:
@@ -23,14 +32,21 @@ jobs:
           - name: Unleashed firmware
             sdk-index-url: "DarkFlippers/unleashed-firmware"
             sdk-channel: dev
-    name: 'ufbt: Build for ${{ matrix.name }}'
-    env:
-      sdk-file: ''
+    name: 'UFBT: Build for ${{ matrix.name }}'
     steps:
+      - name: Print info
+        run: |
+          echo "echo ::notice file=${{ env.FILENAME }},title=Build::Build FAP ${{ inputs.release_version }}" >> $GITHUB_ENV
+
+      - name: Replace slash with dash
+        run: | 
+          CLEAN_NAME=$(echo ${{ inputs.release_version }} | sed 's/\//-/g')
+          echo "ARTIFACT_NAME: ${CLEAN_NAME}" >> $GITHUB_ENV
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.event.inputs.release_version }}
+          repository: ${{ inputs.release_version }}
           clean: true
           submodules: true
 
@@ -38,20 +54,32 @@ jobs:
         if: ${{ matrix.sdk-index-url }}
         run: |
           echo "Using SDK index URL: ${{ matrix.sdk-index-url }}"
-          gh release download --repo "DarkFlippers/unleashed-firmware" --pattern "flipper-z-f7-sdk-unlshd-*.zip" --clobber
+          gh release download --repo "DarkFlippers/unleashed-firmware" \
+            --pattern "flipper-z-f7-sdk-unlshd-*.zip" --clobber
           unzip flipper-z-f7-sdk-unlshd-*.zip
           mv flipper-z-f7-sdk-unlshd-* sdk
-          echo "sdk-file: sdk/components.json" >> $GITHUB_ENV
+          echo "SDK_FILE: sdk/components.json" >> $GITHUB_ENV
 
       - name: Build with ufbt
         uses: flipperdevices/flipperzero-ufbt-action@v0.1
         id: build-app
         with:
           sdk-channel: ${{ matrix.sdk-channel }}
-          sdk-file: ${{ env.sdk-file }}
+          sdk-file: ${{ env.SDK_FILE }}
 
       - name: Upload app artifacts
+        id: upload-artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.event.repository.name }}-${{ steps.build-app.outputs.suffix }}
+          name: ${{ env.ARTIFACT_NAME }}
           path: ${{ steps.build-app.outputs.fap-artifacts }}
+          overwrite: true
+          if-no-files-found: error
+
+      - name: Extract ID and URL
+        env:
+          ARTIFACT_ID: ${{ steps.upload-artifacts.outputs.artifact_id }}
+          ARTIFACT_URL: ${{ steps.upload-artifacts.outputs.artifact_url }}
+        run: |
+          echo "echo ::notice file=${{ env.FILENAME }},title=Artifact ID::${{ env.ARTIFACT_ID }}" >> $GITHUB_ENV
+          echo "echo ::notice file=${{ env.FILENAME }},title=Artifact URL::${{ env.ARTIFACT_URL }}" >> $GITHUB_ENV
