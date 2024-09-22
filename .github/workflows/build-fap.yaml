@@ -40,8 +40,8 @@ jobs:
 
       - name: Replace slash with dash
         run: | 
-          CLEAN_NAME=$(echo ${{ inputs.release_version }} | sed 's/\//-/g')
-          echo "ARTIFACT_NAME: ${CLEAN_NAME}" >> $GITHUB_ENV
+          CLEAN_NAME=$(echo "${{ inputs.release_version }}" | sed 's/\//-/g' | tr '[:upper:]' '[:lower:]')
+          echo "ARTIFACT_NAME=${CLEAN_NAME}" >> $GITHUB_ENV
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -58,7 +58,7 @@ jobs:
             --pattern "flipper-z-f7-sdk-unlshd-*.zip" --clobber
           unzip flipper-z-f7-sdk-unlshd-*.zip
           mv flipper-z-f7-sdk-unlshd-* sdk
-          echo "SDK_FILE: sdk/components.json" >> $GITHUB_ENV
+          echo "SDK_FILE=sdk/components.json" >> $GITHUB_ENV
 
       - name: Build with ufbt
         uses: flipperdevices/flipperzero-ufbt-action@v0.1
