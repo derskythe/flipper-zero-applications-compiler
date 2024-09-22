@@ -85,4 +85,4 @@ jobs:
       - name: Extract ID and URL
         run: |
           echo "echo ::notice file=${{ env.FILENAME }},title=Artifact ID::${{ steps.artifact-upload-step.outputs.artifact-id }}"
-          echo "echo ::notice file=${{ env.FILENAME }},title=Artifact URL::${{ github.server_url }}/${{ github.repository }}/actions/run/${{ github.run_id }}/artifacts/${{ steps.artifact-upload-step.outputs.artifact-id }}"
+          echo "echo ::notice file=${{ env.FILENAME }},title=Artifact URL::${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.artifact-upload-step.outputs.artifact-id }}"
