@@ -1,2 +1,3 @@
-# flipper_application_compiler
-CI/CD pipeline to compile Flipper Zero apps
+# Flipper Zero CI/CD to compile apps
+
+The CI/CD pipeline to compile Flipper Zero apps

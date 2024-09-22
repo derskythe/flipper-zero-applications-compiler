@@ -1,0 +1,57 @@
+name: "FAP: Build for multiple SDK sources"
+run-name: "Build for multiple SDK sources"
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: "Application repository URL"
+        required: true
+
+permissions:
+  packages: write
+
+jobs:
+  ufbt-build-action:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Official dev channel
+            sdk-channel: dev
+          - name: Unleashed firmware
+            sdk-index-url: "DarkFlippers/unleashed-firmware"
+            sdk-channel: dev
+    name: 'ufbt: Build for ${{ matrix.name }}'
+    env:
+      sdk-file: ''
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.inputs.release_version }}
+          clean: true
+          submodules: true
+
+      - name: Download SDK
+        if: ${{ matrix.sdk-index-url }}
+        run: |
+          echo "Using SDK index URL: ${{ matrix.sdk-index-url }}"
+          gh release download --repo "DarkFlippers/unleashed-firmware" --pattern "flipper-z-f7-sdk-unlshd-*.zip" --clobber
+          unzip flipper-z-f7-sdk-unlshd-*.zip
+          mv flipper-z-f7-sdk-unlshd-* sdk
+          echo "sdk-file: sdk/components.json" >> $GITHUB_ENV
+
+      - name: Build with ufbt
+        uses: flipperdevices/flipperzero-ufbt-action@v0.1
+        id: build-app
+        with:
+          sdk-channel: ${{ matrix.sdk-channel }}
+          sdk-file: ${{ env.sdk-file }}
+
+      - name: Upload app artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.repository.name }}-${{ steps.build-app.outputs.suffix }}
+          path: ${{ steps.build-app.outputs.fap-artifacts }}
