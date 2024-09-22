@@ -67,6 +67,7 @@ jobs:
           ufbt-args: "--verbose"
           sdk-channel: ${{ matrix.sdk-channel }}
           sdk-file: ${{ env.SDK_FILE }}
+          sdk-hw-target: ${{ matrix.sdk-hw-target }}
 
       - name: Upload app artifacts
         id: upload-artifacts
