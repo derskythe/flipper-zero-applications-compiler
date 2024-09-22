@@ -36,7 +36,7 @@ jobs:
     steps:
       - name: Print info
         run: |
-          echo "echo ::notice file=${{ env.FILENAME }},title=Build::Build FAP ${{ inputs.release_version }}" >> $GITHUB_ENV
+          echo "echo ::notice file=${{ env.FILENAME }},title=Build::Build FAP ${{ inputs.release_version }}"
 
       - name: Replace slash with dash
         run: | 
@@ -84,5 +84,5 @@ jobs:
 
       - name: Extract ID and URL
         run: |
-          echo "echo ::notice file=${{ env.FILENAME }},title=Artifact ID::${{ steps.artifact-upload-step.outputs.artifact-id }}" >> $GITHUB_ENV
-          echo "echo ::notice file=${{ env.FILENAME }},title=Artifact URL::${{ steps.artifact-upload-step.outputs.artifact_url }}" >> $GITHUB_ENV
+          echo "echo ::notice file=${{ env.FILENAME }},title=Artifact ID::${{ steps.artifact-upload-step.outputs.artifact-id }}"
+          echo "echo ::notice file=${{ env.FILENAME }},title=Artifact URL::${{ github.server_url }}/${{ github.repository }}/actions/run/${{ github.run_id }}/artifacts/${{ steps.artifact-upload-step.outputs.artifact-id }}"
